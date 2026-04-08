@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – FarmOrgano</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- Mobile Hamburger -->
+<button class="hamburger" id="hamburger" title="Toggle Menu">☰</button>
+
+<div class="app-layout">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">🌿</span>
+            <h1>FarmOrgano</h1>
+            <span>Organic Farming System</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-label">Main</div>
+
+            <div class="nav-item active" data-page="dashboard">
+                <span class="nav-icon">🏠</span>
+                <span>Dashboard</span>
+            </div>
+
+            <div class="sidebar-section-label">Farm Management</div>
+
+            <div class="nav-item" data-page="crops">
+                <span class="nav-icon">🌾</span>
+                <span>Crops</span>
+            </div>
+            <div class="nav-item" data-page="fertilizers">
+                <span class="nav-icon">🧪</span>
+                <span>Fertilizers</span>
+            </div>
+
+            <div class="sidebar-section-label">Business</div>
+
+            <div class="nav-item" data-page="customers">
+                <span class="nav-icon">👥</span>
+                <span>Customers</span>
+            </div>
+            <div class="nav-item" data-page="orders">
+                <span class="nav-icon">📦</span>
+                <span>Orders</span>
+            </div>
+            <div class="nav-item" data-page="sales">
+                <span class="nav-icon">📊</span>
+                <span>Sales & Reports</span>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatarDisplay">A</div>
+                <div>
+                    <div class="user-name" id="userNameDisplay">Loading...</div>
+                    <div class="user-role">Farm Manager</div>
+                </div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">
+                🚪 Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <div class="main-content">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-title">
+                <h2 id="topbarTitle">🌿 Dashboard</h2>
+                <p id="topbarSubtitle">Welcome back! Here's your farm overview.</p>
+            </div>
+            <div class="topbar-actions">
+                <span style="font-size:13px;color:var(--text-light);" id="currentDate"></span>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+
+            <!-- ============================================
+                 PAGE: DASHBOARD
+            ============================================ -->
+            <div class="page-section active" id="page-dashboard">
+
+                <!-- Stat Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🌾</div>
+                        <div class="stat-value" id="stat-crops">—</div>
+                        <div class="stat-label">Total Crops</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🧪</div>
+                        <div class="stat-value" id="stat-fertilizers">—</div>
+                        <div class="stat-label">Fertilizers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="stat-customers">—</div>
+                        <div class="stat-label">Customers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-value" id="stat-orders">—</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" style="font-size:1.4rem;" id="stat-sales">—</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="two-col-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">📊 Monthly Sales Revenue</div>
+                        <canvas id="salesChart" height="220"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">🥧 Module Overview</div>
+                        <canvas id="moduleChart" height="220"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card mt-24">
+                    <div class="card-header d-flex justify-between align-center">
+                        <h3 class="card-title">📋 Recent Orders</h3>
+                        <button class="btn btn-outline btn-sm" onclick="document.querySelector('[data-page=orders]').click()">View All →</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersBody">
+                                    <tr><td colspan="5" class="text-center text-muted" style="padding:20px">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 PAGE: CROPS
+            ============================================ -->
+            <div class="page-section" id="page-crops">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">🌾 Crop Management</h2>
+                        <p class="section-subtitle">Add and manage all your organic crops</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addCropModal')">
+                        + Add Crop
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body" id="cropsTableContainer">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 PAGE: FERTILIZERS
+            ============================================ -->
+            <div class="page-section" id="page-fertilizers">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">🧪 Fertilizer Management</h2>
+                        <p class="section-subtitle">Track all organic fertilizers and usage</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addFertilizerModal')">
+                        + Add Fertilizer
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body" id="fertilizersTableContainer">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 PAGE: CUSTOMERS
+            ============================================ -->
+            <div class="page-section" id="page-customers">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">👥 Customer Management</h2>
+                        <p class="section-subtitle">Manage your buyers and contacts</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addCustomerModal')">
+                        + Add Customer
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body" id="customersTableContainer">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 PAGE: ORDERS
+            ============================================ -->
+            <div class="page-section" id="page-orders">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">📦 Order Management</h2>
+                        <p class="section-subtitle">Create and track all customer orders</p>
+                    </div>
+                    <button class="btn btn-primary" id="openAddOrderBtn">
+                        + Create Order
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body" id="ordersTableContainer">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 PAGE: SALES
+            ============================================ -->
+            <div class="page-section" id="page-sales">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">📊 Sales & Reports</h2>
+                        <p class="section-subtitle">Monthly revenue analytics and sales history</p>
+                    </div>
+                </div>
+
+                <!-- Monthly summary cards -->
+                <div class="stats-grid mb-24" id="monthlySummary">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Line Chart -->
+                <div class="chart-container mb-24">
+                    <div class="chart-title">📈 Monthly Revenue Trend</div>
+                    <canvas id="salesLineChart" height="160"></canvas>
+                </div>
+
+                <!-- Full Sales Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📋 All Sales Records</h3>
+                    </div>
+                    <div class="card-body" id="salesTableContainer">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content-area -->
+    </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+
+<!-- ================================================
+     MODALS
+================================================ -->
+
+<!-- ADD CROP MODAL -->
+<div class="modal-overlay" id="addCropModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">🌾 Add New Crop</h3>
+            <button class="modal-close" onclick="closeModal('addCropModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="addCropForm">
+                <div class="form-group">
+                    <label class="form-label">Crop Name *</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Tomato" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-control">
+                        <option value="">-- Select Category --</option>
+                        <option>Vegetable</option>
+                        <option>Fruit</option>
+                        <option>Cereal</option>
+                        <option>Leafy Vegetable</option>
+                        <option>Pulse</option>
+                        <option>Oilseed</option>
+                        <option>Spice</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Season</label>
+                    <select name="season" class="form-control">
+                        <option value="">-- Select Season --</option>
+                        <option>Kharif</option>
+                        <option>Rabi</option>
+                        <option>Zaid</option>
+                        <option>Summer</option>
+                        <option>Winter</option>
+                        <option>Year-Round</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Soil Type</label>
+                    <select name="soil_type" class="form-control">
+                        <option value="">-- Select Soil Type --</option>
+                        <option>Loamy</option>
+                        <option>Sandy Loam</option>
+                        <option>Clay Loam</option>
+                        <option>Clayey</option>
+                        <option>Alluvial</option>
+                        <option>Black Soil</option>
+                        <option>Red Soil</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Duration</label>
+                    <input type="text" name="duration" class="form-control" placeholder="e.g. 60-80 days">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yield Information</label>
+                    <textarea name="yield_info" class="form-control" placeholder="e.g. 20-25 tons per hectare"></textarea>
+                </div>
+                <div class="modal-footer" style="padding:0;border:0;margin-top:8px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addCropModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Crop</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT CROP MODAL -->
+<div class="modal-overlay" id="editCropModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">✏️ Edit Crop</h3>
+            <button class="modal-close" onclick="closeModal('editCropModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="editCropForm">
+                <input type="hidden" name="id">
+                <div class="form-group">
+                    <label class="form-label">Crop Name *</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-control">
+                        <option value="">-- Select Category --</option>
+                        <option>Vegetable</option><option>Fruit</option>
+                        <option>Cereal</option><option>Leafy Vegetable</option>
+                        <option>Pulse</option><option>Oilseed</option>
+                        <option>Spice</option><option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Season</label>
+                    <select name="season" class="form-control">
+                        <option value="">-- Select Season --</option>
+                        <option>Kharif</option><option>Rabi</option>
+                        <option>Zaid</option><option>Summer</option>
+                        <option>Winter</option><option>Year-Round</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Soil Type</label>
+                    <select name="soil_type" class="form-control">
+                        <option value="">-- Select Soil Type --</option>
+                        <option>Loamy</option><option>Sandy Loam</option>
+                        <option>Clay Loam</option><option>Clayey</option>
+                        <option>Alluvial</option><option>Black Soil</option><option>Red Soil</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Duration</label>
+                    <input type="text" name="duration" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yield Information</label>
+                    <textarea name="yield_info" class="form-control"></textarea>
+                </div>
+                <div class="modal-footer" style="padding:0;border:0;margin-top:8px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('editCropModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Crop</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ADD FERTILIZER MODAL -->
+<div class="modal-overlay" id="addFertilizerModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">🧪 Add Fertilizer</h3>
+            <button class="modal-close" onclick="closeModal('addFertilizerModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="addFertilizerForm">
+                <div class="form-group">
+                    <label class="form-label">Fertilizer Name *</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Vermicompost" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select name="type" class="form-control">
+                        <option value="">-- Select Type --</option>
+                        <option>Organic</option>
+                        <option>Bio-fertilizer</option>
+                        <option>Green Manure</option>
+                        <option>Compost</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Usage Instructions</label>
+                    <textarea name="usage" class="form-control" placeholder="How and when to apply..."></textarea>
+                </div>
+                <div class="modal-footer" style="padding:0;border:0;margin-top:8px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addFertilizerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Fertilizer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ADD CUSTOMER MODAL -->
+<div class="modal-overlay" id="addCustomerModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">👥 Add Customer</h3>
+            <button class="modal-close" onclick="closeModal('addCustomerModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="addCustomerForm">
+                <div class="form-group">
+                    <label class="form-label">Customer Name *</label>
+                    <input type="text" name="name" class="form-control" placeholder="Full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Number</label>
+                    <input type="text" name="contact" class="form-control" placeholder="Mobile number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" class="form-control" placeholder="Full address"></textarea>
+                </div>
+                <div class="modal-footer" style="padding:0;border:0;margin-top:8px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addCustomerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ADD ORDER MODAL -->
+<div class="modal-overlay" id="addOrderModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">📦 Create Order</h3>
+            <button class="modal-close" onclick="closeModal('addOrderModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="addOrderForm">
+                <div class="form-group">
+                    <label class="form-label">Customer *</label>
+                    <select name="customer_id" id="orderCustomerSelect" class="form-control" required>
+                        <option value="">-- Select Customer --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Product Name *</label>
+                    <input type="text" name="product_name" class="form-control" placeholder="e.g. Organic Tomato" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantity (kg / units) *</label>
+                    <input type="number" name="quantity" class="form-control" placeholder="e.g. 50" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price per Unit (₹) *</label>
+                    <input type="number" name="price" class="form-control" placeholder="e.g. 25.00" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Order Date *</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+                <div class="modal-footer" style="padding:0;border:0;margin-top:8px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addOrderModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script src="../js/utils.js"></script>
+<script src="../js/dashboard.js"></script>
+<script>
+    // Set today's date on topbar and order date default
+    document.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+        document.getElementById('currentDate').textContent =
+            now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Set default date on order form
+        const dateInput = document.querySelector('input[name="date"]');
+        if (dateInput) dateInput.value = now.toISOString().split('T')[0];
+    });
+</script>
+</body>
+</html>

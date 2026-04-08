@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register – FarmOrgano</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(ellipse at 70% 40%, rgba(118,196,66,0.10) 0%, transparent 55%),
+                linear-gradient(160deg, #0f2412 0%, #1a3d1f 60%, #0d1f0f 100%);
+            padding: 20px;
+        }
+
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 900px;
+            width: 100%;
+            background: var(--white);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .auth-form-panel {
+            padding: 48px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .auth-form-panel h3 {
+            font-size: 1.6rem;
+            color: var(--green-dark);
+            margin-bottom: 6px;
+        }
+        .auth-form-panel .auth-subtitle {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+        .auth-form-panel .auth-subtitle a {
+            color: var(--green-main);
+            font-weight: 600;
+        }
+        .auth-form-panel .auth-subtitle a:hover { text-decoration: underline; }
+
+        .form-control { background: #f8fbf8; }
+
+        .btn-auth {
+            width: 100%;
+            padding: 13px;
+            font-size: 15px;
+            border-radius: var(--radius);
+            margin-top: 4px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--green-main); }
+
+        /* Right panel */
+        .auth-panel {
+            background: linear-gradient(160deg, #1a3d1f, var(--green-main));
+            padding: 52px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-panel::before {
+            content: '🌱';
+            position: absolute;
+            font-size: 14rem;
+            opacity: 0.07;
+            top: -40px;
+            left: -40px;
+            line-height: 1;
+        }
+        .auth-panel-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--white);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .auth-panel-logo .logo-anim { animation: float 3s ease-in-out infinite; display: inline-block; }
+        .auth-panel-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 40px;
+        }
+        .auth-panel h2 { color: var(--white); font-size: 1.5rem; margin-bottom: 14px; }
+        .auth-panel p  { color: rgba(255,255,255,0.55); font-size: 14px; line-height: 1.7; margin-bottom: 36px; }
+
+        .steps { display: flex; flex-direction: column; gap: 20px; }
+        .step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-text { color: rgba(255,255,255,0.65); font-size: 13px; line-height: 1.6; }
+        .step-text strong { color: var(--white); display: block; margin-bottom: 2px; }
+
+        @media (max-width: 700px) {
+            .auth-container { grid-template-columns: 1fr; }
+            .auth-panel { display: none; }
+            .auth-form-panel { padding: 36px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<div class="auth-container">
+    <!-- Left Panel - Form -->
+    <div class="auth-form-panel">
+        <a href="../index.html" class="back-link">← Back to Home</a>
+        <h3>Create Account 🌱</h3>
+        <p class="auth-subtitle">
+            Already have an account? <a href="login.html">Sign in</a>
+        </p>
+
+        <form id="registerForm" novalidate>
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="fullname" class="form-control"
+                       placeholder="Your full name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control"
+                       placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control"
+                       placeholder="Min. 6 characters" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="confirm" class="form-control"
+                       placeholder="Repeat password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-auth">
+                🚀 Create Account
+            </button>
+        </form>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="auth-panel">
+        <div class="auth-panel-logo">
+            <span class="logo-anim">🌿</span> FarmOrgano
+        </div>
+        <div class="auth-panel-tag">Get started in minutes</div>
+        <h2>Start Managing Your Farm Today</h2>
+        <p>Set up your account and gain access to all tools — completely free for your farm.</p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text">
+                    <strong>Create Your Account</strong>
+                    Register with your email and a secure password.
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">
+                    <strong>Add Your Crops</strong>
+                    Enter your crop details — season, soil type, yield info.
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">
+                    <strong>Manage Customers & Orders</strong>
+                    Add buyers, create orders, and track every sale.
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-text">
+                    <strong>View Analytics</strong>
+                    See monthly revenue charts and growth insights.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script src="../js/auth.js"></script>
+</body>
+</html>
